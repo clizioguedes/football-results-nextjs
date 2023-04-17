@@ -1,3 +1,4 @@
 export const ENDPOINTS = {
-  LEAGUES: "leagues",
+  LEAGUES: "/leagues",
+  COUNTRIES: "/countries"
 };
