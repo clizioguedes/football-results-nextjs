@@ -9,7 +9,7 @@ export type League = {
   name: string;
   code: string;
   type: string;
-  emblem?: string | null;
+  emblem: string;
   plan: string;
   currentSeason: {
     id: number;
