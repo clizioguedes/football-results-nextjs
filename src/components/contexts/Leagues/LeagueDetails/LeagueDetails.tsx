@@ -1,13 +1,13 @@
-import { useQuery } from "@tanstack/react-query";
-import React from "react";
+import { useQuery } from '@tanstack/react-query';
+import React from 'react';
 
-import { Grid } from "@mui/material";
+import { Grid, Skeleton } from '@mui/material';
 
-import StandingTable from "@/components/contexts/Standings/StandingTable/StandingTable";
-import { getStandingsByLeagueCode } from "@/services/requests/standings";
-import { getMatchesByLeagueCode } from "@/services/requests/matches";
-import MatchesList from "@/components/contexts/Matches/MatchesList/MatchesList";
-import { Match } from "@/types/matches";
+import StandingTable from '@/components/contexts/Standings/StandingTable/StandingTable';
+import { getStandingsByLeagueCode } from '@/services/requests/standings';
+import { getMatchesByLeagueCode } from '@/services/requests/matches';
+import MatchesList from '@/components/contexts/Matches/MatchesList/MatchesList';
+import { Match } from '@/types/matches';
 
 type LeagueDetailsProps = {
   code: string;
@@ -15,15 +15,21 @@ type LeagueDetailsProps = {
 
 export default function LeagueDetails({ code }: LeagueDetailsProps) {
   const { data: leagueStandings } = useQuery({
-    queryKey: ["standing", `${code}`],
+    queryKey: ['standing', `${code}`],
     queryFn: () => getStandingsByLeagueCode(code),
     enabled: !!code,
+    refetchOnWindowFocus: false,
+    keepPreviousData: true,
+    refetchOnMount: false,
   });
 
   const { data: rounds } = useQuery({
-    queryKey: ["matches", `${code}`],
+    queryKey: ['matches', `${code}`],
     queryFn: () => getMatchesByLeagueCode(code),
     enabled: !!code,
+    refetchOnWindowFocus: false,
+    keepPreviousData: true,
+    refetchOnMount: false,
     select: (data) => {
       const rounds = data.matches.reduce(
         (acc: Array<Match[]>, current: Match) => {
@@ -44,20 +50,17 @@ export default function LeagueDetails({ code }: LeagueDetailsProps) {
     },
   });
 
-  if (!leagueStandings || !rounds) {
-    return <div>Carregando...</div>;
-  }
-
   return (
     <Grid container spacing={1}>
       <Grid item xl={8} lg={8} md={8} sm={12} xs={12}>
         <StandingTable table={leagueStandings?.standings[0].table} />
       </Grid>
       <Grid item xl={4} lg={4} md={4} sm={12} xs={12}>
-        <MatchesList
-          matches={rounds}
-          currentMatchDay={leagueStandings?.season.currentMatchday}
-        />
+        {rounds?.length ? (
+          <MatchesList matches={rounds} />
+        ) : (
+          <Skeleton animation="wave" height="100%" />
+        )}
       </Grid>
     </Grid>
   );

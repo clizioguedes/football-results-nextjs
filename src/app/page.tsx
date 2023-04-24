@@ -1,22 +1,25 @@
-"use client";
+'use client';
 
-import LeagueDetails from "@/components/contexts/Leagues/LeagueDetails/LeagueDetails";
-import { getLeagues } from "@/services/requests/leagues";
-import { Box, Container, Skeleton, Tab, Tabs } from "@mui/material";
-import { useQuery } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import LeagueDetails from '@/components/contexts/Leagues/LeagueDetails/LeagueDetails';
+import { getLeagues } from '@/services/requests/leagues';
+import { Box, Container, Skeleton, Tab, Tabs } from '@mui/material';
+import { useQuery } from '@tanstack/react-query';
+import { useEffect, useState } from 'react';
 
-import TabPanel from "@mui/lab/TabPanel";
-import { TabContext } from "@mui/lab";
-import Image from "next/image";
+import TabPanel from '@mui/lab/TabPanel';
+import { TabContext } from '@mui/lab';
+import Image from 'next/image';
 
 export default function Home() {
   const { data: leagues } = useQuery({
-    queryKey: ["leagues"],
+    queryKey: ['leagues'],
     queryFn: () => getLeagues(),
+    refetchOnWindowFocus: false,
+    keepPreviousData: true,
+    refetchOnMount: false,
   });
 
-  const [value, setValue] = useState("");
+  const [value, setValue] = useState('BSA');
 
   const handleChange = (
     _event: React.SyntheticEvent | null,
@@ -31,26 +34,12 @@ export default function Home() {
     }
   }, [leagues]);
 
+  console.log('value', value);
+
   if (!leagues) {
     return (
       <Container>
-        <TabContext value={value}>
-          <Box sx={{ borderBottom: 1, borderColor: "divider", width: "100%" }}>
-            <Tabs
-              value={value}
-              onChange={handleChange}
-              aria-label="basic tabs example"
-              variant="scrollable"
-              scrollButtons="auto"
-            >
-              <Skeleton animation="wave" width="100%" height={90} />
-            </Tabs>
-
-            <TabPanel value={value}>
-              <LeagueDetails code={value} />
-            </TabPanel>
-          </Box>
-        </TabContext>
+        <Skeleton animation="wave" width="100%" height={90} />
       </Container>
     );
   }
@@ -58,12 +47,13 @@ export default function Home() {
   return (
     <Container>
       <TabContext value={value}>
-        <Box sx={{ borderBottom: 1, borderColor: "divider", width: "100%" }}>
+        <Box sx={{ borderBottom: 1, borderColor: 'divider', width: '100%' }}>
           <Tabs
             onChange={handleChange}
             aria-label="basic tabs example"
             variant="scrollable"
             scrollButtons="auto"
+            value={value}
           >
             {leagues?.map((league) => {
               return (
