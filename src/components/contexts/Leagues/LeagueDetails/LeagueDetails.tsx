@@ -56,11 +56,10 @@ export default function LeagueDetails({ code }: LeagueDetailsProps) {
         <StandingTable table={leagueStandings?.standings[0].table} />
       </Grid>
       <Grid item xl={4} lg={4} md={4} sm={12} xs={12}>
-        {rounds?.length ? (
-          <MatchesList matches={rounds} />
-        ) : (
-          <Skeleton animation="wave" height="100%" />
-        )}
+        <MatchesList
+          matches={rounds}
+          currentRound={leagueStandings?.season.currentMatchday}
+        />
       </Grid>
     </Grid>
   );

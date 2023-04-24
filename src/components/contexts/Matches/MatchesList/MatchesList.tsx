@@ -2,14 +2,18 @@ import MatchItem from '@/components/contexts/Matches/MatchItem/MatchItem';
 import * as S from '@/components/contexts/Matches/MatchesList/MatchesList.styles';
 import { Match } from '@/types/matches';
 import { Pagination } from '@mui/material';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 type MatchesListProps = {
-  matches: Match[][];
+  matches?: Match[][];
+  currentRound?: number;
 };
 
-export default function MatchesList({ matches }: MatchesListProps) {
-  const [page, setPage] = useState(matches[1][1].season.currentMatchday);
+export default function MatchesList({
+  matches,
+  currentRound,
+}: MatchesListProps) {
+  const [page, setPage] = useState(currentRound);
 
   const handleChangePagination = (
     _event: React.ChangeEvent<unknown> | undefined,
@@ -17,6 +21,14 @@ export default function MatchesList({ matches }: MatchesListProps) {
   ) => {
     setPage(value);
   };
+
+  useEffect(() => {
+    if (currentRound) handleChangePagination(undefined, currentRound);
+  }, [currentRound]);
+
+  if (!page) {
+    return <div>Carregando...</div>;
+  }
 
   return (
     <S.MatchesListContainer>
@@ -26,7 +38,7 @@ export default function MatchesList({ matches }: MatchesListProps) {
           count={matches && matches.length - 1}
           color="primary"
           onChange={handleChangePagination}
-          page={matches[1][1].season.currentMatchday}
+          page={page}
         />
       </S.RoundsContainer>
       <S.MatchesContainer>
